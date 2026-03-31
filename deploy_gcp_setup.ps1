@@ -83,6 +83,20 @@ foreach ($api in $apis) {
 }
 Write-Host "✅ APIs habilitadas" -ForegroundColor Green
 
+# 6. Crear regla de firewall para Cloud IAP
+Write-Host "`n[6/6] Creando regla de firewall para Cloud Identity-Aware Proxy (IAP)..." -ForegroundColor Yellow
+gcloud compute firewall-rules create allow-iap-ssh `
+    --allow=tcp:22 `
+    --source-ranges=35.235.240.0/20 `
+    --description="Allow Cloud IAP to connect via SSH" `
+    --quiet 2>$null
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✅ Regla de firewall creada para IAP" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  Regla de firewall IAP no pudo ser creada (puede que ya exista)" -ForegroundColor Yellow
+}
+
 Write-Host "`n================================" -ForegroundColor Cyan
 Write-Host "✅ Setup completado exitosamente!" -ForegroundColor Green
 Write-Host "================================" -ForegroundColor Cyan

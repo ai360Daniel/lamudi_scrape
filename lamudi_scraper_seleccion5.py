@@ -38,7 +38,6 @@ USAR_GCS = True  # Cambiar a False para guardar localmente
 
 
 from scraper_functions import (
-    ESTADOS, TIPOS_PROPIEDAD,
     obtener_carpeta_anio_mes,
     construir_url, obtener_nombre_archivo,
     scrape_lamudi, scrape_y_guardar_fallidos,

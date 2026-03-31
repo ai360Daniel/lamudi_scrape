@@ -89,7 +89,53 @@ python lamudi_scraper_seleccion2.py
 - 🔄 **Escalable**: Cada VM trabaja independientemente
 - 📊 **Consolidated**: Todos los datos en el mismo GCS bucket
 
-## 📦 Estructura del Proyecto
+## � Instalación y Ejecución en VMs (GCP)
+
+Sigue estos pasos para configurar el proyecto en cada una de tus máquinas virtuales:
+
+### 1. Clonar el Repositorio
+Usa este comando para descargar todo el proyecto:
+```bash
+git clone https://github.com/ai360Daniel/lamudi_scrape.git
+```
+
+### 2. Entrar a la carpeta y ver los archivos
+```bash
+cd lamudi_scrape
+ls -la
+```
+
+### 3. Instalar las librerías necesarias
+Es indispensable instalar las dependencias antes de correr cualquier script:
+```bash
+pip3 install -r requirements.txt
+```
+
+### 4. Ejecutar el scraper (según la VM en la que estés)
+Corre el script correspondiente a la selección de estados que le toca a esa VM:
+
+*   **VM 1:** `python3 lamudi_scraper_seleccion1.py`
+*   **VM 2:** `python3 lamudi_scraper_seleccion2.py`
+*   **VM 3:** `python3 lamudi_scraper_seleccion3.py`
+*   **VM 4:** `python3 lamudi_scraper_seleccion4.py`
+*   **VM 5:** `python3 lamudi_scraper_seleccion5.py`
+
+### 💡 Comandos útiles adicionales:
+
+*   **Actualizar el código:** Si subes cambios a GitHub desde tu PC y quieres que bajen a la VM:
+    ```bash
+    git pull origin main
+    ```
+*   **Correr en segundo plano:** Si quieres que el scraper siga corriendo aunque cierres la terminal (recomendado):
+    ```bash
+    nohup python3 lamudi_scraper_seleccion1.py > logs_scraping.txt 2>&1 &
+    ```
+*   **Ver el progreso en tiempo real:**
+    ```bash
+    tail -f logs_scraping.txt
+    ```
+
+## �📦 Estructura del Proyecto
 
 ```
 lamudi_webscrape/

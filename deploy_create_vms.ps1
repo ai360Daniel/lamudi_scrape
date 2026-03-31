@@ -54,39 +54,39 @@ Write-Host "`nVMs a crear: $($VMS.Count)" -ForegroundColor Yellow
 # Startup script para instalar dependencias y ejecutar scraper
 $STARTUP_SCRIPT = @"
 #!/bin/bash
-set -e
 
-echo "=== Lamudi Scraper VM Startup ==="
-cd /root
+echo "=== Lamudi Scraper VM Startup ===" > /tmp/startup.log
 
 # Actualizar sistema
-apt-get update
-apt-get install -y python3-pip git wget
+echo "Actualizando paquetes..." >> /tmp/startup.log
+apt-get update >> /tmp/startup.log 2>&1
+apt-get install -y python3-pip git wget curl unzip >> /tmp/startup.log 2>&1
 
-# Instalar Chrome para Selenium
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-apt-get update
-apt-get install -y google-chrome-stable
+# Instalar Chromium (más ligero que Chrome)
+echo "Instalando Chromium..." >> /tmp/startup.log
+apt-get install -y chromium-browser >> /tmp/startup.log 2>&1
 
-# Instalar ChromeDriver
-CHROME_VERSION=\$(google-chrome --version | awk '{print \$NF}' | cut -d '.' -f1)
-wget -q https://googlechromelabs.github.io/chrome-for-testing/
-wget -q https://edgedl.me.chromium.org/chromedriver/LATEST_RELEASE_\$CHROME_VERSION -O /tmp/driver_version
-DRIVER_VERSION=\$(cat /tmp/driver_version)
-wget -q https://edgedl.me.chromium.org/chromedriver/\$DRIVER_VERSION/chromedriver-linux64.zip -O /tmp/chromedriver.zip
-unzip /tmp/chromedriver.zip -d /usr/local/bin/
-chmod +x /usr/local/bin/chromedriver-linux64/chromedriver
+# Descargar y instalar ChromeDriver
+echo "Descargando ChromeDriver..." >> /tmp/startup.log
+cd /tmp
+CHROME_VERSION=\$(chromium-browser --version | awk '{print \$NF}' | cut -d. -f1)
+echo "Versión de Chrome: \$CHROME_VERSION" >> /tmp/startup.log
+
+# Usar ChromeDriver predeterminado o instalar
+apt-get install -y chromium-chromedriver >> /tmp/startup.log 2>&1
 
 # Clonar repositorio
-git clone https://github.com/ai360Daniel/lamudi_scrape.git
-cd lamudi_scrape
+echo "Clonando repositorio..." >> /tmp/startup.log
+cd /root
+git clone https://github.com/ai360Daniel/lamudi_scrape.git lamudi_scrape >> /tmp/startup.log 2>&1
 
-# Instalar Python dependencies
-pip3 install -q -r requirements.txt
+# Instalar Python dependencias
+echo "Instalando dependencias Python..." >> /tmp/startup.log
+cd /root/lamudi_scrape
+pip3 install -r requirements.txt >> /tmp/startup.log 2>&1
 
-echo "=== Máquina lista para ejecutar scraper ==="
-echo "Ejecuta: python3 @SCRIPT_NAME@ para comenzar"
+echo "=== Máquina lista para ejecutar scraper ===" >> /tmp/startup.log
+echo "Startup completado. Ver logs: tail -f /tmp/startup.log" >> /tmp/startup.log
 "@
 
 Write-Host "`n[Confirmación]" -ForegroundColor Cyan
