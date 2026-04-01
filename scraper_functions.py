@@ -224,16 +224,29 @@ def scrape_lamudi(start_url, output_filename, usar_gcs=True):
     """
     # Configuración de Chrome
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Descomenta para ejecutar en segundo plano
+    chrome_options.add_argument("--headless")  # Activado para VMs
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage") # Recomendado para Docker/VMs
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
 
     # Inicializar el driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.set_page_load_timeout(4)  # 4s: páginas cargan rápido
-    driver.implicitly_wait(1)  # 1s: mínimo necesario
+    try:
+        # Intenta usar el Service con ChromeDriverManager de forma simple
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    except Exception as e:
+        print(f"⚠️ Error al inicializar Chrome con ChromeDriverManager: {e}")
+        print("🔄 Intentando inicialización alternativa...")
+        try:
+            # Intento alternativo sin especificar service explícitamente (deja que selenium lo maneje)
+            driver = webdriver.Chrome(options=chrome_options)
+        except Exception as e2:
+            print(f"❌ Error crítico al inicializar Chrome: {e2}")
+            return 0
+
+    driver.set_page_load_timeout(30)  # Aumentado para mayor estabilidad en red variable
+    driver.implicitly_wait(2) 
     
     # Lista para almacenar los datos
     data_list = []
@@ -615,13 +628,24 @@ def reintentar_links_fallidos(failed_filename, nuevo_csv=None):
     print("=" * 80)
     
     chrome_options = Options()
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
     
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.set_page_load_timeout(20)
+    try:
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    except Exception as e:
+        print(f"⚠️ Error al inicializar Chrome en reintento: {e}")
+        try:
+            driver = webdriver.Chrome(options=chrome_options)
+        except Exception as e2:
+            print(f"❌ Falló inicialización de Chrome en reintento: {e2}")
+            return False
+
+    driver.set_page_load_timeout(30)
     driver.implicitly_wait(5)
     wait = WebDriverWait(driver, 10)
     
@@ -918,13 +942,24 @@ def contar_propiedades_por_estado_y_tipo(transaccion='for-sale'):
         pd.DataFrame: tabla con estados en filas, tipos de propiedad en columnas
     """
     chrome_options = Options()
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
     
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.set_page_load_timeout(15)
+    try:
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    except Exception as e:
+        print(f"⚠️ Error al inicializar Chrome en conteo: {e}")
+        try:
+            driver = webdriver.Chrome(options=chrome_options)
+        except Exception as e2:
+            print(f"❌ Falló inicialización de Chrome en conteo: {e2}")
+            return pd.DataFrame()
+
+    driver.set_page_load_timeout(30)
     wait = WebDriverWait(driver, 10)
     
     tipos_propiedad = ['comercial', 'terreno', 'casa', 'departamento', 'offices']

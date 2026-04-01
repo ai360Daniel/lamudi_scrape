@@ -128,6 +128,7 @@ foreach ($vm in $VMS) {
             --boot-disk-size=$BOOT_DISK_SIZE `
             --service-account=$SERVICE_ACCOUNT `
             --scopes=cloud-platform `
+            --tags=allow-ssh `
             --metadata-from-file startup-script=$STARTUP_SCRIPT_FILE `
             --description=$DESCRIPTION `
             --quiet
