@@ -233,14 +233,14 @@ def scrape_lamudi(start_url, output_filename, usar_gcs=True):
 
     # Inicializar el driver
     try:
-        # Intenta usar el Service con ChromeDriverManager de forma simple
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        # Intenta usar Selenium Manager (automático en Selenium 4+)
+        driver = webdriver.Chrome(options=chrome_options)
     except Exception as e:
-        print(f"⚠️ Error al inicializar Chrome con ChromeDriverManager: {e}")
-        print("🔄 Intentando inicialización alternativa...")
+        print(f"⚠️ Error al inicializar Chrome con Selenium Manager: {e}")
+        print("🔄 Intentando inicialización alternativa con ChromeDriverManager...")
         try:
-            # Intento alternativo sin especificar service explícitamente (deja que selenium lo maneje)
-            driver = webdriver.Chrome(options=chrome_options)
+            # Intento alternativo con ChromeDriverManager si el Manager falla
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         except Exception as e2:
             print(f"❌ Error crítico al inicializar Chrome: {e2}")
             return 0

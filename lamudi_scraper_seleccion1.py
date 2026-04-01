@@ -34,7 +34,7 @@ ESTADOS = [
 TIPOS_PROPIEDAD = ['comercial', 'terreno', 'casa', 'departamento', 'offices']
 
 # Configuración de Google Cloud Storage
-USAR_GCS = True  # Cambiar a False para guardar localmente
+USAR_GCS = False  # Cambiar a False para guardar localmente
 
 
 from scraper_functions import (
